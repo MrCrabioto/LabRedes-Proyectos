@@ -1,0 +1,9 @@
+/* hero: fondo en rojo similar al ejemplo */
+.hero {
+  background-color: #e63946; /* o el rojo exacto que prefieras */
+}
+
+/* Ajustes de tipografía y espaciado */
+body {
+  font-family: 'Segoe UI', sans-serif;
+}

@@ -7,3 +7,23 @@
 body {
   font-family: 'Segoe UI', sans-serif;
 }
+
+/* Botones “Ver más” personalizados */
+.btn-custom {
+  border-radius: 20px;
+  padding: 0.35rem 1rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Efecto hover */
+.btn-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Opcional: un ligero gradiente de fondo */
+.btn-primary.btn-custom {
+  background: linear-gradient(135deg, #4a90e2, #007bff);
+  border: none;
+}
+

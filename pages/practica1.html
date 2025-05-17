@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Práctica 1: ESP32 Entradas y Salidas Digitales</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons (opcional) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+  />
+  <!-- Tus estilos generales -->
+  <link rel="stylesheet" href="../style.css" />
+  <!-- Estilos específicos de timeline -->
+  <style>
+    /* Línea vertical */
+    .timeline {
+      position: relative;
+      margin-left: 2rem;
+      padding-left: 1rem;
+      border-left: 3px solid #dee2e6;
+    }
+    /* Cada paso */
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5rem;
+      padding-left: 1.5rem;
+    }
+    /* Punto en la línea */
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -1.6rem;
+      top: 0.3rem;
+      width: 1rem;
+      height: 1rem;
+      background-color: #0d6efd;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 0 0 1px #0d6efd;
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== Navbar (idéntica a index.html) ===== -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="../index.html">Mi Portafolio</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navMenu"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html#about">Acerca de mí</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html#practicas">Prácticas</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Contenido principal ===== -->
+  <main class="container my-5">
+    <!-- Título e Introducción -->
+    <header class="mb-4">
+      <h1>Práctica 1: ESP32 Entradas y Salidas Digitales</h1>
+      <p class="lead">
+        En esta práctica, usamos un ESP32 DevKitC para implementar un simple sistema de entradas y salidas que nos permita simular un comportamiento lógico AND y OR usando dos botones y un diodo LED.
+      </p>
+      <h5>Materiales: </h5>
+      <ul>
+        <li>1x ESP32 DevKitC</li>
+        <li>2x Pushbutton de 2.54mm</li>
+        <li>1x LED Rojo</li>
+        <li>1x Protoboard</li>
+      </ul>
+      <hr>
+    </header>
+
+    <!-- Timeline de pasos -->
+    <section class="timeline">
+  <!-- Paso 1 -->
+  <div class="timeline-item">
+    <h5>Paso 1: Preparar el entorno de desarrollo</h5>
+    <p>
+      Instalar Arduino IDE (o VS Code + PlatformIO), añadir el gestor de
+      placas “esp32” y seleccionar “ESP32 DevKitC” en el puerto COM adecuado. Usamos la ventana de preferencias en el Arduino IDE (ctrl + ;) para pegar este link: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+
+    </p>
+    <p>       Dicha URL nos permitirá instalar múltiples tarjetas ESP32 compatibles con Arduino.</p>
+    <figure class="figure">
+      <img
+        src="../images/paso1_entorno.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Configuración IDE"
+      />
+      <figcaption class="figure-caption">
+        Ventana del IDE con la placa ESP32 DevKitC seleccionada.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 2 -->
+  <div class="timeline-item">
+    <h5>Paso 2: Conocer el pinout de la DevKit</h5>
+    <p>
+      Consultamos el diagrama oficial de pines e identificamos los GPIO de salida
+      que queremos utilizar.
+    </p>
+    <figure class="figure">
+      <img
+        src="../images/paso2_pinout.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Diagrama de pinout"
+      />
+      <figcaption class="figure-caption">
+        Diagrama de pines de la ESP32 DevKitC.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 3 -->
+  <div class="timeline-item">
+    <h5>Paso 3: Montaje del LED</h5>
+    <p>
+      Conecté un LED entre los pines 27 y 14 del ESP32, no utilizamos resistencia en este caso dado que el voltaje del GPIO es directamente compatible con el LED, así como también la corriente está
+      limitada internamente en el microcontrolador. El conectar los elementos a los GPIO directamente nos permite cambiar la polaridad en código y simplifica enormemente nuestro cableado, con la consigna de que
+      sólo es posible alimentar circuitos que no superen los 30mA.
+    </p>
+    <p>Usamos un código simple para encender el LED y comprobar su funcionamiento.</p>
+    <figure class="figure">
+      <img
+        src="../images/paso3_led.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Conexión LED"
+      />
+      <figcaption class="figure-caption">
+        LED conectado entre los pines 27 y 14.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 4 -->
+  <div class="timeline-item">
+    <h5>Paso 4: Conectar Botones</h5>
+    <p>
+      Añadimos dos botones entre los pines 4 - 16 y 18 - 19 . El pin que manejará la lectura de cada botón deberá configurarse con pull-down interno para evitar lecturas flotantes y estados indefinidos.
+    </p>
+    <figure class="figure">
+      <img
+        src="../images/paso4_circuito.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Botón con pull-down"
+      />
+      <figcaption class="figure-caption">
+        Circuito completo ensamblado en una protoboard.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 5 -->
+  <div class="timeline-item">
+    <h5>Paso 5: Lógica OR con dos botones</h5>
+    <p>
+      Usamos un estado lógico OR directamente implementado en el código para lograr el 
+      comportamiento deseado
+      (<code>if(b1 || b2)</code>) al controlar el LED.
+    </p>
+
+        <pre><code class="language-cpp">
+// Pines para ESP32 DevKitC:
+#define LED 27
+#define LEDGND 14
+
+#define BT1 18
+#define BT1GND 19
+#define BT2 16
+#define BT2GND 4
+const int DelayConst = 1000;
+
+void setup() {
+  // Configuración de Pines 
+  pinMode(LED, OUTPUT);
+  pinMode(LEDGND, OUTPUT);
+  pinMode(BT1GND, OUTPUT);
+  pinMode(BT2GND, OUTPUT);
+  pinMode(BT1, INPUT_PULLUP);
+  pinMode(BT2, INPUT_PULLUP);
+
+  digitalWrite(LEDGND, LOW);
+  digitalWrite(BT1GND, LOW);
+  digitalWrite(BT2GND, LOW);
+}
+
+void loop() {
+  //Lógica Booleana
+  if(digitalRead(BT1) == false || digitalRead(BT2) == false){
+    digitalWrite(LED, HIGH);
+  }
+  else{
+    digitalWrite(LED, LOW);
+  }
+}
+    <div class="ratio ratio-16x9 mb-2">
+      <video controls class="w-100 h-100 rounded">
+        <source src="../videos/paso5_or.mp4" type="video/mp4">
+        Tu navegador no soporta la etiqueta <code>video</code>.
+      </video>
+    </div>
+    <p class="text-muted small">
+      Demostración de la lógica OR con dos botones controlando el LED.
+    </p>
+  </div>
+
+  <!-- Paso 6 -->
+  <div class="timeline-item">
+    <h5>Paso 6: Lógica AND con dos botones</h5>
+    <p>
+      Ajustamos el sketch para usar lógica AND
+      (<code>if(b1 && b2)</code>) y encender el LED sólo cuando ambos
+      botones estén pulsados.
+    </p>
+    <div class="ratio ratio-16x9 mb-2">
+      <video controls class="w-100 h-100 rounded">
+        <source src="../videos/paso6_and.mp4" type="video/mp4">
+        Tu navegador no soporta la etiqueta <code>video</code>.
+      </video>
+    </div>
+    <p class="text-muted small">
+      Demostración de la lógica OR con dos botones controlando el LED.
+    </p>
+  </div>
+
+
+    <!-- Botón volver -->
+    <div class="mt-5">
+      <a href="../index.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-short"></i> Volver al portafolio
+      </a>
+    </div>
+  </main>
+
+  <!-- Bootstrap 5 JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+</body>
+</html>

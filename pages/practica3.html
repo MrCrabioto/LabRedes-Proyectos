@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Práctica 3: XIAO ESP32C3 con Thingspeak</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons (opcional) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+  />
+  <!-- Tus estilos generales -->
+  <link rel="stylesheet" href="../style.css" />
+  <!-- Estilos específicos de timeline -->
+  <style>
+    /* Línea vertical */
+    .timeline {
+      position: relative;
+      margin-left: 2rem;
+      padding-left: 1rem;
+      border-left: 3px solid #dee2e6;
+    }
+    /* Cada paso */
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5rem;
+      padding-left: 1.5rem;
+    }
+    /* Punto en la línea */
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -1.6rem;
+      top: 0.3rem;
+      width: 1rem;
+      height: 1rem;
+      background-color: #0d6efd;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 0 0 1px #0d6efd;
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== Navbar (idéntica a index.html) ===== -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="../index.html">Mi Portafolio</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navMenu"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html#about">Acerca de mí</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html#practicas">Prácticas</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Contenido principal ===== -->
+  <main class="container my-5">
+    <!-- Título e Introducción -->
+    <header class="mb-4">
+      <h1>Práctica 3: XIAO ESP32C3 con Thingspeak</h1>
+      <p class="lead">
+        En esta práctica, usamos una tarjeta XIAO ESP32C3 de Seeed Studio para leer un par de sensores y un botón: un Potenciómetro que es un sensor analógico y un DHT11, que es un sensor digital. Una vez
+        realizada la lectura, los datos se envían a la nube a través de Thingspeak para ser visualizados y almacenados. 
+      </p>
+    <h5>Materiales: </h5>
+      <ul>
+        <li>1x Seeed Studio XIAO ESP32C3</li>
+        <li>1x Potenciómetro 10kOhm</li>
+        <li>1x Sensor DHT11 o DHT22</li>
+        <li>1x Pushbutton 2.54mm</li>
+        <li>1x Protoboard</li>
+        <li>6x Cables para Conexión</li>
+      </ul>
+      <hr>
+    </header>
+
+    <!-- Timeline de pasos -->
+    <section class="timeline">
+  <!-- Paso 1 -->
+  <div class="timeline-item">
+    <h5>Paso 1: Preparar el entorno de desarrollo</h5>
+    <p>Seleccionar la XIAO ESP32 C3 de la lista de tarjetas disponibles en el IDE de Arduino. (Debe haberse instalado en el IDE previamente)</p>
+    <figure class="figure">
+      <img
+        src="../images/P2_paso1_entorno.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Configuración IDE"
+      />
+      <figcaption class="figure-caption">
+        Ventana del IDE con la placa XIAO ESP32C3 seleccionada.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 2 -->
+  <div class="timeline-item">
+    <h5>Paso 2: Conocer el pinout de la XIAO ESP32C3</h5>
+    <p>
+      Consultamos el diagrama oficial de pines e identificamos los GPIO de salida
+      que queremos utilizar.
+    </p>
+    <figure class="figure">
+      <img
+        src="../images/P2_paso2_pinout.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Diagrama de pinout"
+      />
+      <figcaption class="figure-caption">
+        Diagrama de pines de la ESP32 DevKitC.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 3 -->
+  <div class="timeline-item">
+    <h5>Paso 3: Montaje del Potenciómetro</h5>
+    <p>
+      Conectamos el Potenciómetro, el cual cuenta con tres terminales: Lado 1, Wiper y Lado 2. El Wiper, la pata del centro siempre va hacia el microcontrolador, mientras que las otras dos van conectadas
+      a 3.3V o a Tierra de forma indistinta, el orden de conexión sólo cambiará la dirección de giro hacia la cual el valor del Potenciómetro aumentará.
+    </p>
+    <p>Al ser un elemento analógico, debemos leerlo desde un pin del microcontrolador con acceso al ADC interno. Dichos pines en el caso de la XIAO ESP32C3 están marcados por una bandera rosa numerados del A0 al A3.</p>
+    <p>Conectamos el Potenciómetro en orden 3.3V - GPIO2 - GND.</p>
+    <figure class="figure">
+      <img
+        src="../images/P2_paso3_pot.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Conexión Potenciometro"
+      />
+      <figcaption class="figure-caption">
+        Potenciómetro conectado al pin GPIO2.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 4 -->
+  <div class="timeline-item">
+    <h5>Paso 4: Conexión del Sensor DHTxx</h5>
+    <p>
+      Los sensores de la familia DHTxx son sensores digitales de temperatura y humedad ambiental. La diferencia entre el DHT11 y el DHT22 es simplemente la precisión de la medición que realizan, siendo el
+      DHT22 el más preciso.
+    </p>
+    <p>Para conectarlo, simplemente hay que proveer de 3.3V, un GPIO de lectura digital y conexión a Tierra. </p>
+    <figure class="figure">
+      <img
+        src="../images/P2_paso4_conexionDHT.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Conexion DHTxx"
+      />
+      <figcaption class="figure-caption">
+        Circuito con el sensor DHT11 ensamblado en una protoboard.
+      </figcaption>
+    </figure>
+  </div>
+
+    <!-- Paso 5 -->
+  <div class="timeline-item">
+    <h5>Paso 5: Conexión del Botón</h5>
+    <p>
+      Conectamos el botón como en la primera práctica. Usamos los pines 10 y 8 de la tarjeta XIAO.
+    </p>
+    <figure class="figure">
+      <img
+        src="../images/P2_paso5_conexionBot.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Conexion Boton"
+      />
+      <figcaption class="figure-caption">
+        Circuito completo con los dos sensores y el botón.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 6 -->
+  <div class="timeline-item">
+    <h5>Paso 6: Prueba de Conexión WiFi</h5>
+    <p>
+      A través del siguiente código nos intentamos conectar a una red WiFi y obtener una dirección IP local.
+    </p>
+
+    <pre><code class="language-cpp">
+#include Arduino.h
+#include DHT.h            // Librería para el sensor DHT
+    </code></pre>
+    </div>
+
+
+    <figure class="figure">
+      <img
+        src="../images/P2_paso6_conexionWiFi.jpg"
+        class="figure-img img-fluid rounded"
+        alt="Conexion WiFI"
+      />
+      <figcaption class="figure-caption">
+        El ESP32 se ha conectado a nuestra red!.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- Paso 6 -->
+  <div class="timeline-item">
+    <h5>Paso 6: Programación Final del Sistema</h5>
+    <p>
+      Queremos leer los valores del potenciómetro, del sensor DHT y del botón y enviar los datos a la nube, por lo que aplicamos el siguiente código que toma dichos valores y además los envía al servidor
+      Thingspeak usando nuestra API key mediante requests HTTP.
+    </p>
+
+        <pre><code class="language-cpp">
+#include <Arduino.h>
+#include <DHT.h>            // Librería para el sensor DHT
+
+// ===== Configuración de pines =====
+const int potPin  = A0;     // Pin analógico donde va el potenciómetro
+const int DHTPIN  = 6;      // Pin digital donde va el sensor DHT11
+
+// ===== Tipo de sensor DHT =====
+#define DHTTYPE DHT11      // Modelo de DHT: DHT11 - Cambiar si se desea usar el DHT22
+DHT dht(DHTPIN, DHTTYPE);   // Objeto DHT
+
+// ===== Variables de almacenamiento =====
+float temperatura = 0.0;    // Grados Celsius leídos del DHT11
+float humedad      = 0.0;    // Porcentaje de humedad leído del DHT11
+int   valorPot     = 0;      // Valor crudo (0–4095) del potenciómetro
+float voltPot      = 0.0;    // Voltaje calculado (0–3.3 V) del potenciómetro
+
+void setup() {
+  // Inicia la comunicación serie a 115200 baudios
+  Serial.begin(115200);
+  while(!Serial) { /* Espera a que se abra el puerto serie */ }
+
+  // Inicializa el sensor DHT
+  dht.begin();
+
+  // Configura modos de pin
+  pinMode(potPin, INPUT);     // Potenciómetro como entrada analógica
+  pinMode(DHTPIN, INPUT);     // DHT11 usa su propia resistencia pull-up
+}
+
+void loop() {
+  // --- Lectura del potenciómetro ---
+  valorPot = analogRead(potPin);
+  // Con ESP32, analogRead devuelve 0–4095 en rango 0–3.3 V
+  voltPot = (valorPot / 4095.0) * 3.3;
+
+  // --- Lectura del sensor DHT11 ---
+  humedad     = dht.readHumidity();          // Humedad en %
+  temperatura = dht.readTemperature();       // Temperatura en °C
+
+  // Comprueba si hubo error en la lectura
+  if (isnan(humedad) || isnan(temperatura)) {
+    Serial.println("Error: No se pudo leer el DHT11");
+  } else {
+    // Envía los datos por Serial en formato legible
+    Serial.print("Potenciómetro: ");
+    Serial.print(valorPot);
+    Serial.print("  |  ");
+    Serial.print("Voltaje: ");
+    Serial.print(voltPot, 2);   // 2 decimales
+    Serial.print(" V");
+
+    Serial.print("  ||  ");
+    Serial.print("Humedad: ");
+    Serial.print(humedad, 1);   // 1 decimal
+    Serial.print(" %  |  ");
+    Serial.print("Temp: ");
+    Serial.print(temperatura, 1); // 1 decimal
+    Serial.println(" °C");
+  }
+
+  delay(1000);  // Espera 2 segundos antes de la siguiente lectura
+}
+    </code></pre>
+  </div>
+
+  <!-- Paso 6 -->
+  <div class="timeline-item">
+    <h5>Paso 6: Sistema en funcionamiento!</h5>
+    <p>
+      Al abrir el puerto serial desde el Arduino IDE, podemos ver los valores solicitados.
+    </p>
+    <div class="ratio ratio-16x9 mb-2">
+      <video controls class="w-100 h-100 rounded">
+        <source src="../videos/P2_paso6_func.mp4" type="video/mp4">
+        Tu navegador no soporta la etiqueta <code>video</code>.
+      </video>
+    </div>
+    <p class="text-muted small">
+      Demostración del sistema funcionando.
+    </p>
+  </div>
+
+    <!-- Botón volver -->
+    <div class="mt-5">
+      <a href="../index.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-short"></i> Volver al portafolio
+      </a>
+    </div>
+  </main>
+
+  <!-- Bootstrap 5 JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+</body>
+</html>

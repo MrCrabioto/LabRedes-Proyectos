@@ -1,0 +1,37 @@
+let reg = msg.payload;
+
+let wind_dir_avg = (reg[0] << 16) + reg[1];
+let wind_speed_min = (reg[2] << 16) + reg[3];
+let wind_speed_max = (reg[4] << 16) + reg[5];
+let wind_speed_avg = (reg[6] << 16) + reg[7];
+let rain_accum = (reg[8] << 16) + reg[9];
+let rain_duration = (reg[10] << 16) + reg[11];
+
+let wind_dir_avg_val = wind_dir_avg / 1000;
+let wind_speed = wind_dir_avg / 10000;
+
+// Mensaje completo con todos los datos
+let msgAll = {
+    payload: {
+        wind_dir_avg: wind_dir_avg_val,
+        wind_speed_min: wind_speed_min / 100,
+        wind_speed_max: wind_speed_max / 100,
+        wind_speed_avg: wind_speed_avg / 1000,
+        rain_accumulated: rain_accum / 100,
+        rain_duration: rain_duration
+    },
+    topic: "bloque_2"
+};
+
+// Solo para el chart
+let msgWindDir = {
+    payload: wind_dir_avg_val,
+    topic: "wind_dir_avg"
+};
+
+let msgWindSpeed= {
+    payload: wind_speed,
+    topic: "wind_speed_avg"
+};
+
+return [msgAll, msgWindDir, msgWindSpeed];

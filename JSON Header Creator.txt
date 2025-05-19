@@ -1,0 +1,41 @@
+const device_id = "WeatherStation01";
+const ubicacion = "IDIT";
+
+// Fusiona todos los bloques en un solo objeto plano
+let bloques = msg.payload;
+let datos = {};
+
+for (let bloque in bloques) {
+    if (typeof bloques[bloque] === "object") {
+        Object.assign(datos, bloques[bloque]);
+    }
+}
+
+let mensajes = [];
+
+for (let key in datos) {
+    const valor = datos[key];
+
+    // Validación estricta: solo si es número válido
+    if (typeof valor === "number" && !isNaN(valor)) {
+        mensajes.push({
+            headers: {
+                "Content-Type": "application/json"
+            },
+            payload: {
+                device_id: device_id,
+                sensor_type: key,
+                value: valor,
+                ubicacion: ubicacion
+            }
+        });
+    }
+}
+
+// Si no hay valores válidos, no envíes nada
+if (mensajes.length === 0) {
+    node.warn("No se encontraron valores numéricos válidos");
+    return null;
+}
+
+return [mensajes];

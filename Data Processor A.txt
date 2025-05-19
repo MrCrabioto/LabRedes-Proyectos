@@ -1,0 +1,44 @@
+let reg = msg.payload;
+
+// Combinar registros
+let temp_raw = (reg[0] << 16) + reg[1];
+let hum_raw = (reg[2] << 16) + reg[3];
+let press_raw = (reg[4] << 16) + reg[5];
+let light_raw = (reg[6] << 16) + reg[7];
+let wind_min_raw = (reg[8] << 16) + reg[9];
+let wind_max_raw = (reg[10] << 16) + reg[11];
+
+let temperature = temp_raw / 1000;
+let humidity = hum_raw / 1000;
+let pressure = press_raw / 100000;
+
+
+// Salida principal con todos los datos
+let msgAll = {
+    payload: {
+        temperature: temperature,
+        humidity: humidity,
+        pressure: pressure,
+        light: light_raw,
+        wind_dir_min: wind_min_raw / 1000,
+        wind_dir_max: wind_max_raw / 1000
+    },
+    topic: "bloque_1"
+};
+
+// Salida secundaria con solo temperatura para el chart
+let msgTemp = {
+    payload: temperature,
+    topic: "temperature"
+};
+let msgHum = {
+    payload: humidity,
+    topic: "humidity"
+};
+let msgPressure = {
+    payload: pressure,
+    topic: "pressure"
+};
+
+// return como arreglo para múltiples salidas
+return [msgAll, msgTemp, msgHum, msgPressure];

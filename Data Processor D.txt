@@ -1,0 +1,10 @@
+// Convertir la cadena JSON a objeto
+let datos = JSON.parse(msg.payload);
+
+// Crear 3 mensajes independientes para cada valor
+let msg1 = { payload: parseInt(datos.pm1_0) };   // elimina 'ug/m3'
+let msg2 = { payload: parseInt(datos.pm2_5) };
+let msg3 = { payload: parseInt(datos.pm10) };
+
+// Enviar como array (se conecta a un nodo "split" tipo 'gauge' múltiple o 'debug')
+return [msg1, msg2, msg3];

@@ -1,0 +1,16 @@
+let reg = msg.payload;
+
+let rain_intensity = (reg[0] << 16) + reg[1];
+let rain_intensity_max = (reg[2] << 16) + reg[3];
+let heating_temp = (reg[4] << 16) + reg[5];
+let dumping_state = (reg[6] << 16) + reg[7];
+
+msg.payload = {
+    rain_intensity: rain_intensity / 100,
+    rain_intensity_max: rain_intensity_max / 100,
+    heating_temp: heating_temp / 1000,
+    dumping_state: dumping_state
+};
+
+msg.topic = "bloque_3";
+return msg;
